@@ -241,7 +241,7 @@
             </div>
         </div>
 
-        <div class="api-status" id="apiStatus">✅ 資料來源: Finnhub API</div>
+        <div class="api-status" id="apiStatus">🔄 正在連接 API...</div>
         <div class="last-update" id="lastUpdate">正在載入數據...</div>
 
         <div class="stats-bar">
@@ -272,45 +272,191 @@
 
         <div class="footer">
             <div style="font-size: 14px; margin-bottom: 10px;">⚡ Powered by J.A.R.V.I.S. Battle Engine</div>
-            <div>資料來源: Finnhub API | 自動更新: 每30秒</div>
+            <div>資料來源: Finnhub / Yahoo / Tiingo (自動輪替) | 自動更新: 每60秒</div>
             <div style="margin-top: 10px; color: #888;">整合盤前報告 + 戰鬥報告 | 即時監控系統</div>
         </div>
     </div>
 
     <script>
+        // ========== 配置 ==========
         const STOCKS = ['NVDA', 'TSLA', 'TSM', 'VOO', 'AVGO'];
-        const API_KEY = 'd62de09r01qlugepk6mgd62de09r01qlugepk6n0';
+        const UPDATE_INTERVAL = 60000; // 60秒更新一次（節省 API 額度）
         
-        async function fetchStockData() {
+        // API Keys
+        const FINNHUB_KEY = 'd62de09r01qlugepk6mgd62de09r01qlugepk6n0';
+        const TIINGO_KEY = 'f19ac6a3788b925fcbac3edef04ea48374b06f4a';
+        
+        // API 輪替狀態
+        let currentApiIndex = 0;
+        const API_LIST = ['finnhub', 'yahoo', 'tiingo'];
+        const API_NAMES = {
+            'finnhub': 'Finnhub',
+            'yahoo': 'Yahoo Finance',
+            'tiingo': 'Tiingo'
+        };
+        
+        // API 失敗計數（用於智能輪替）
+        let apiFailCount = { finnhub: 0, yahoo: 0, tiingo: 0 };
+        
+        // ========== API 請求函數 ==========
+        
+        // Finnhub API
+        async function fetchFromFinnhub(symbol) {
             try {
-                const promises = STOCKS.map(async symbol => {
-                    const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`);
-                    const data = await response.json();
-                    
-                    if (data.c && data.pc) {
-                        const change = ((data.c - data.pc) / data.pc * 100).toFixed(2);
-                        return {
-                            symbol: symbol,
-                            price: data.c.toFixed(2),
-                            change: change,
-                            previousClose: data.pc.toFixed(2),
-                            high: data.h.toFixed(2),
-                            low: data.l.toFixed(2)
-                        };
-                    }
-                    return null;
-                });
+                const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${FINNHUB_KEY}`);
+                if (!response.ok) throw new Error('Finnhub API error');
+                const data = await response.json();
                 
-                const results = await Promise.all(promises);
-                return results.filter(r => r !== null);
+                if (data.c && data.pc && data.c > 0) {
+                    return {
+                        symbol: symbol,
+                        price: data.c.toFixed(2),
+                        change: ((data.c - data.pc) / data.pc * 100).toFixed(2),
+                        previousClose: data.pc.toFixed(2),
+                        high: data.h ? data.h.toFixed(2) : '-',
+                        low: data.l ? data.l.toFixed(2) : '-',
+                        source: 'finnhub'
+                    };
+                }
+                throw new Error('Invalid data');
             } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('apiStatus').textContent = '❌ API 連接失敗';
-                document.getElementById('apiStatus').style.color = '#ff5252';
+                console.error(`Finnhub error for ${symbol}:`, error);
                 return null;
             }
         }
+        
+        // Yahoo Finance API
+        async function fetchFromYahoo(symbol) {
+            try {
+                const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`);
+                if (!response.ok) throw new Error('Yahoo API error');
+                const data = await response.json();
+                
+                if (data.chart && data.chart.result && data.chart.result[0]) {
+                    const meta = data.chart.result[0].meta;
+                    const currentPrice = meta.regularMarketPrice;
+                    const previousClose = meta.chartPreviousClose || meta.previousClose;
+                    
+                    if (currentPrice && previousClose) {
+                        return {
+                            symbol: symbol,
+                            price: currentPrice.toFixed(2),
+                            change: ((currentPrice - previousClose) / previousClose * 100).toFixed(2),
+                            previousClose: previousClose.toFixed(2),
+                            high: meta.regularMarketDayHigh ? meta.regularMarketDayHigh.toFixed(2) : '-',
+                            low: meta.regularMarketDayLow ? meta.regularMarketDayLow.toFixed(2) : '-',
+                            source: 'yahoo'
+                        };
+                    }
+                }
+                throw new Error('Invalid data');
+            } catch (error) {
+                console.error(`Yahoo error for ${symbol}:`, error);
+                return null;
+            }
+        }
+        
+        // Tiingo API
+        async function fetchFromTiingo(symbol) {
+            try {
+                const response = await fetch(`https://api.tiingo.com/iex/${symbol}?token=${TIINGO_KEY}`);
+                if (!response.ok) throw new Error('Tiingo API error');
+                const data = await response.json();
+                
+                if (data && data[0] && data[0].last) {
+                    const quote = data[0];
+                    const currentPrice = quote.last;
+                    const previousClose = quote.prevClose;
+                    
+                    if (currentPrice && previousClose) {
+                        return {
+                            symbol: symbol,
+                            price: currentPrice.toFixed(2),
+                            change: ((currentPrice - previousClose) / previousClose * 100).toFixed(2),
+                            previousClose: previousClose.toFixed(2),
+                            high: quote.high ? quote.high.toFixed(2) : '-',
+                            low: quote.low ? quote.low.toFixed(2) : '-',
+                            source: 'tiingo'
+                        };
+                    }
+                }
+                throw new Error('Invalid data');
+            } catch (error) {
+                console.error(`Tiingo error for ${symbol}:`, error);
+                return null;
+            }
+        }
+        
+        // ========== API 輪替邏輯 ==========
+        
+        async function fetchWithRotation(symbol) {
+            const apiOrder = [...API_LIST];
+            // 從當前 API 開始嘗試
+            const startIndex = currentApiIndex;
+            
+            for (let i = 0; i < apiOrder.length; i++) {
+                const apiIndex = (startIndex + i) % apiOrder.length;
+                const api = apiOrder[apiIndex];
+                
+                let result = null;
+                
+                switch (api) {
+                    case 'finnhub':
+                        result = await fetchFromFinnhub(symbol);
+                        break;
+                    case 'yahoo':
+                        result = await fetchFromYahoo(symbol);
+                        break;
+                    case 'tiingo':
+                        result = await fetchFromTiingo(symbol);
+                        break;
+                }
+                
+                if (result) {
+                    apiFailCount[api] = 0; // 重置失敗計數
+                    return result;
+                } else {
+                    apiFailCount[api]++;
+                }
+            }
+            
+            return null;
+        }
+        
+        async function fetchStockData() {
+            const results = [];
+            let successApi = null;
+            
+            for (const symbol of STOCKS) {
+                const result = await fetchWithRotation(symbol);
+                if (result) {
+                    results.push(result);
+                    if (!successApi) successApi = result.source;
+                }
+                // 小延遲避免 API 限制
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            // 更新 API 狀態顯示
+            if (results.length > 0) {
+                const apiName = API_NAMES[successApi] || successApi;
+                document.getElementById('apiStatus').textContent = `✅ 資料來源: ${apiName} (${results.length}/${STOCKS.length} 成功)`;
+                document.getElementById('apiStatus').style.color = '#00e676';
+                
+                // 智能輪替：如果當前 API 成功，下次繼續用；否則切換
+                currentApiIndex = API_LIST.indexOf(successApi);
+            } else {
+                document.getElementById('apiStatus').textContent = '❌ 所有 API 都無法連接';
+                document.getElementById('apiStatus').style.color = '#ff5252';
+                // 切換到下一個 API
+                currentApiIndex = (currentApiIndex + 1) % API_LIST.length;
+            }
+            
+            return results.length > 0 ? results : null;
+        }
 
+        // ========== 訊號判斷 ==========
+        
         function getSignal(symbol, change) {
             const changeNum = parseFloat(change);
             
@@ -329,6 +475,8 @@
             }
         }
 
+        // ========== 渲染函數 ==========
+        
         function renderStocks(stocks) {
             if (!stocks || stocks.length === 0) {
                 document.getElementById('stockGrid').innerHTML = '<div class="loading"><p>無法獲取數據，請稍後重試</p></div>';
@@ -370,6 +518,8 @@
             document.getElementById('avgChange').innerHTML = `<span style="color: ${avgChangeColor}">${avgChange >= 0 ? '+' : ''}${avgChange}%</span>`;
         }
 
+        // ========== 主更新函數 ==========
+        
         async function updateData() {
             const now = new Date();
             const timeString = now.toLocaleString('zh-TW', { 
@@ -381,14 +531,16 @@
                 second: '2-digit',
                 hour12: false 
             });
-            document.getElementById('lastUpdate').textContent = `📅 最後更新: ${timeString}`;
+            document.getElementById('lastUpdate').textContent = `📅 最後更新: ${timeString} (每60秒自動更新)`;
             
             const stocks = await fetchStockData();
             renderStocks(stocks);
         }
 
+        // ========== 啟動 ==========
+        
         updateData();
-        setInterval(updateData, 30000);
+        setInterval(updateData, UPDATE_INTERVAL);
     </script>
 </body>
 </html>
