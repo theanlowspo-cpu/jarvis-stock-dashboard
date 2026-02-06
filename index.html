@@ -187,13 +187,43 @@
         .signal-badge.hold { background: #9c27b0; color: #fff; }
         .signal-badge.watch { background: #ffa726; color: #000; }
 
-        .technical-indicators {
+        .price-info {
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px dashed #444;
-            font-size: 11px;
-            color: #666;
+            font-size: 12px;
+            color: #888;
         }
+
+        .technical-indicators {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            font-size: 11px;
+        }
+
+        .tech-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .tech-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .tech-label {
+            color: #888;
+        }
+
+        .tech-value {
+            font-weight: bold;
+        }
+
+        .tech-value.bullish { color: #69f0ae; }
+        .tech-value.bearish { color: #ff5252; }
+        .tech-value.neutral { color: #ffa726; }
 
         .footer {
             text-align: center;
@@ -280,7 +310,7 @@
     <script>
         // ========== 配置 ==========
         const STOCKS = ['NVDA', 'TSLA', 'TSM', 'VOO', 'AVGO'];
-        const UPDATE_INTERVAL = 60000; // 60秒更新一次（節省 API 額度）
+        const UPDATE_INTERVAL = 60000; // 60秒更新一次
         
         // API Keys
         const FINNHUB_KEY = 'd62de09r01qlugepk6mgd62de09r01qlugepk6n0';
@@ -295,12 +325,82 @@
             'tiingo': 'Tiingo'
         };
         
-        // API 失敗計數（用於智能輪替）
+        // API 失敗計數
         let apiFailCount = { finnhub: 0, yahoo: 0, tiingo: 0 };
+        
+        // ========== 技術指標計算 ==========
+        
+        function calculateRSI(prices, period = 14) {
+            if (prices.length < period + 1) return null;
+            
+            let gains = 0;
+            let losses = 0;
+            
+            for (let i = 1; i <= period; i++) {
+                const change = prices[i] - prices[i - 1];
+                if (change > 0) gains += change;
+                else losses -= change;
+            }
+            
+            let avgGain = gains / period;
+            let avgLoss = losses / period;
+            
+            for (let i = period + 1; i < prices.length; i++) {
+                const change = prices[i] - prices[i - 1];
+                if (change > 0) {
+                    avgGain = (avgGain * (period - 1) + change) / period;
+                    avgLoss = (avgLoss * (period - 1)) / period;
+                } else {
+                    avgGain = (avgGain * (period - 1)) / period;
+                    avgLoss = (avgLoss * (period - 1) - change) / period;
+                }
+            }
+            
+            if (avgLoss === 0) return 100;
+            const rs = avgGain / avgLoss;
+            return 100 - (100 / (1 + rs));
+        }
+        
+        function calculateMA(prices, period) {
+            if (prices.length < period) return null;
+            const slice = prices.slice(-period);
+            return slice.reduce((a, b) => a + b, 0) / period;
+        }
+        
+        function calculateMACD(prices) {
+            if (prices.length < 26) return null;
+            
+            // EMA 計算
+            function ema(data, period) {
+                const k = 2 / (period + 1);
+                let emaVal = data.slice(0, period).reduce((a, b) => a + b, 0) / period;
+                for (let i = period; i < data.length; i++) {
+                    emaVal = data[i] * k + emaVal * (1 - k);
+                }
+                return emaVal;
+            }
+            
+            const ema12 = ema(prices, 12);
+            const ema26 = ema(prices, 26);
+            const macdLine = ema12 - ema26;
+            
+            return macdLine;
+        }
+        
+        function calculateVolatility(prices) {
+            if (prices.length < 2) return null;
+            const returns = [];
+            for (let i = 1; i < prices.length; i++) {
+                returns.push((prices[i] - prices[i-1]) / prices[i-1]);
+            }
+            const mean = returns.reduce((a, b) => a + b, 0) / returns.length;
+            const variance = returns.reduce((sum, r) => sum + Math.pow(r - mean, 2), 0) / returns.length;
+            return Math.sqrt(variance) * Math.sqrt(252) * 100; // 年化波動率
+        }
         
         // ========== API 請求函數 ==========
         
-        // Finnhub API
+        // Finnhub API (即時報價)
         async function fetchFromFinnhub(symbol) {
             try {
                 const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${FINNHUB_KEY}`);
@@ -325,19 +425,31 @@
             }
         }
         
-        // Yahoo Finance API
+        // Yahoo Finance API (含歷史數據)
         async function fetchFromYahoo(symbol) {
             try {
-                const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`);
-                if (!response.ok) throw new Error('Yahoo API error');
-                const data = await response.json();
+                // 獲取歷史數據用於計算技術指標
+                const histResponse = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=60d`);
+                if (!histResponse.ok) throw new Error('Yahoo API error');
+                const histData = await histResponse.json();
                 
-                if (data.chart && data.chart.result && data.chart.result[0]) {
-                    const meta = data.chart.result[0].meta;
+                if (histData.chart && histData.chart.result && histData.chart.result[0]) {
+                    const result = histData.chart.result[0];
+                    const meta = result.meta;
+                    const quotes = result.indicators.quote[0];
+                    const closes = quotes.close.filter(c => c !== null);
+                    
                     const currentPrice = meta.regularMarketPrice;
                     const previousClose = meta.chartPreviousClose || meta.previousClose;
                     
                     if (currentPrice && previousClose) {
+                        // 計算技術指標
+                        const rsi = calculateRSI(closes);
+                        const ma5 = calculateMA(closes, 5);
+                        const ma20 = calculateMA(closes, 20);
+                        const macd = calculateMACD(closes);
+                        const volatility = calculateVolatility(closes);
+                        
                         return {
                             symbol: symbol,
                             price: currentPrice.toFixed(2),
@@ -345,7 +457,14 @@
                             previousClose: previousClose.toFixed(2),
                             high: meta.regularMarketDayHigh ? meta.regularMarketDayHigh.toFixed(2) : '-',
                             low: meta.regularMarketDayLow ? meta.regularMarketDayLow.toFixed(2) : '-',
-                            source: 'yahoo'
+                            source: 'yahoo',
+                            // 技術指標
+                            rsi: rsi ? rsi.toFixed(1) : null,
+                            ma5: ma5 ? ma5.toFixed(2) : null,
+                            ma20: ma20 ? ma20.toFixed(2) : null,
+                            macd: macd ? macd.toFixed(2) : null,
+                            volatility: volatility ? volatility.toFixed(1) : null,
+                            volume: meta.regularMarketVolume ? (meta.regularMarketVolume / 1000000).toFixed(1) + 'M' : '-'
                         };
                     }
                 }
@@ -390,14 +509,10 @@
         // ========== API 輪替邏輯 ==========
         
         async function fetchWithRotation(symbol) {
-            const apiOrder = [...API_LIST];
-            // 從當前 API 開始嘗試
-            const startIndex = currentApiIndex;
+            // 優先使用 Yahoo 因為有歷史數據可以計算技術指標
+            const apiOrder = ['yahoo', 'finnhub', 'tiingo'];
             
-            for (let i = 0; i < apiOrder.length; i++) {
-                const apiIndex = (startIndex + i) % apiOrder.length;
-                const api = apiOrder[apiIndex];
-                
+            for (const api of apiOrder) {
                 let result = null;
                 
                 switch (api) {
@@ -413,7 +528,7 @@
                 }
                 
                 if (result) {
-                    apiFailCount[api] = 0; // 重置失敗計數
+                    apiFailCount[api] = 0;
                     return result;
                 } else {
                     apiFailCount[api]++;
@@ -433,23 +548,16 @@
                     results.push(result);
                     if (!successApi) successApi = result.source;
                 }
-                // 小延遲避免 API 限制
-                await new Promise(resolve => setTimeout(resolve, 200));
+                await new Promise(resolve => setTimeout(resolve, 300));
             }
             
-            // 更新 API 狀態顯示
             if (results.length > 0) {
                 const apiName = API_NAMES[successApi] || successApi;
                 document.getElementById('apiStatus').textContent = `✅ 資料來源: ${apiName} (${results.length}/${STOCKS.length} 成功)`;
                 document.getElementById('apiStatus').style.color = '#00e676';
-                
-                // 智能輪替：如果當前 API 成功，下次繼續用；否則切換
-                currentApiIndex = API_LIST.indexOf(successApi);
             } else {
                 document.getElementById('apiStatus').textContent = '❌ 所有 API 都無法連接';
                 document.getElementById('apiStatus').style.color = '#ff5252';
-                // 切換到下一個 API
-                currentApiIndex = (currentApiIndex + 1) % API_LIST.length;
             }
             
             return results.length > 0 ? results : null;
@@ -457,11 +565,23 @@
 
         // ========== 訊號判斷 ==========
         
-        function getSignal(symbol, change) {
-            const changeNum = parseFloat(change);
+        function getSignal(stock) {
+            const changeNum = parseFloat(stock.change);
+            const rsi = stock.rsi ? parseFloat(stock.rsi) : null;
             
-            if (symbol === 'VOO') {
+            if (stock.symbol === 'VOO') {
                 return { type: 'hold', text: '核心持倉 💎', class: 'hold' };
+            }
+            
+            // 結合 RSI 和漲跌幅判斷
+            if (rsi !== null) {
+                if (rsi < 30 && changeNum < -1) {
+                    return { type: 'buy', text: '超賣買入 🔥⭐⭐⭐', class: 'buy' };
+                } else if (rsi < 40 && changeNum < -2) {
+                    return { type: 'buy', text: '中等買入 ⭐⭐', class: 'buy' };
+                } else if (rsi > 70 && changeNum > 2) {
+                    return { type: 'watch', text: '超買觀望 ⚠️', class: 'watch' };
+                }
             }
             
             if (changeNum < -2) {
@@ -473,6 +593,29 @@
             } else {
                 return { type: 'hold', text: '穩定持有 🛡️', class: 'hold' };
             }
+        }
+        
+        function getRsiClass(rsi) {
+            if (rsi === null) return 'neutral';
+            if (rsi < 30) return 'bullish';
+            if (rsi > 70) return 'bearish';
+            return 'neutral';
+        }
+        
+        function getMaClass(price, ma) {
+            if (!ma) return 'neutral';
+            const priceNum = parseFloat(price);
+            const maNum = parseFloat(ma);
+            if (priceNum > maNum * 1.02) return 'bullish';
+            if (priceNum < maNum * 0.98) return 'bearish';
+            return 'neutral';
+        }
+        
+        function getMacdClass(macd) {
+            if (macd === null) return 'neutral';
+            if (macd > 0) return 'bullish';
+            if (macd < 0) return 'bearish';
+            return 'neutral';
         }
 
         // ========== 渲染函數 ==========
@@ -488,7 +631,7 @@
             let totalChange = 0;
 
             const html = stocks.map(stock => {
-                const signal = getSignal(stock.symbol, stock.change);
+                const signal = getSignal(stock);
                 const changeClass = parseFloat(stock.change) >= 0 ? 'positive' : 'negative';
                 const changeSign = parseFloat(stock.change) >= 0 ? '+' : '';
                 
@@ -496,15 +639,55 @@
                 if (signal.type === 'hold') holdCount++;
                 totalChange += parseFloat(stock.change);
 
+                // 技術指標 HTML
+                let techHtml = '';
+                if (stock.rsi || stock.ma5 || stock.ma20 || stock.macd) {
+                    techHtml = `
+                        <div class="technical-indicators">
+                            <div class="tech-row">
+                                <span class="tech-label">RSI(14)</span>
+                                <span class="tech-value ${getRsiClass(stock.rsi)}">${stock.rsi || '-'}</span>
+                            </div>
+                            <div class="tech-row">
+                                <span class="tech-label">MA5</span>
+                                <span class="tech-value ${getMaClass(stock.price, stock.ma5)}">$${stock.ma5 || '-'}</span>
+                            </div>
+                            <div class="tech-row">
+                                <span class="tech-label">MA20</span>
+                                <span class="tech-value ${getMaClass(stock.price, stock.ma20)}">$${stock.ma20 || '-'}</span>
+                            </div>
+                            <div class="tech-row">
+                                <span class="tech-label">MACD</span>
+                                <span class="tech-value ${getMacdClass(stock.macd)}">${stock.macd || '-'}</span>
+                            </div>
+                            <div class="tech-row">
+                                <span class="tech-label">波動率</span>
+                                <span class="tech-value neutral">${stock.volatility ? stock.volatility + '%' : '-'}</span>
+                            </div>
+                            <div class="tech-row">
+                                <span class="tech-label">成交量</span>
+                                <span class="tech-value neutral">${stock.volume || '-'}</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    techHtml = `
+                        <div class="technical-indicators">
+                            <div style="color: #666; text-align: center;">技術指標需要 Yahoo Finance API</div>
+                        </div>
+                    `;
+                }
+
                 return `
                     <div class="stock-card ${signal.class}">
                         <div class="stock-symbol">${stock.symbol}</div>
                         <div class="stock-price">$${stock.price}</div>
                         <div class="stock-change ${changeClass}">${changeSign}${stock.change}%</div>
                         <div class="signal-badge ${signal.class}">${signal.text}</div>
-                        <div class="technical-indicators">
+                        <div class="price-info">
                             前收: $${stock.previousClose} | 高: $${stock.high} | 低: $${stock.low}
                         </div>
+                        ${techHtml}
                     </div>
                 `;
             }).join('');
