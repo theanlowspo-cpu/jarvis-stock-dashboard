@@ -1,0 +1,77 @@
+{
+  "lastUpdate": "2026-02-15T17:24:48.313Z",
+  "lastUpdateFormatted": "2026/2/15 下午5:24:48",
+  "stocks": [
+    {
+      "symbol": "NVDA",
+      "name": "NVDA",
+      "price": "182.88",
+      "change": "0.01",
+      "signal": "HOLD",
+      "signalChinese": "持有不動",
+      "signalColor": "#2196f3",
+      "signalEmoji": "💎",
+      "volume": 300,
+      "high": "182.88",
+      "low": "182.87"
+    },
+    {
+      "symbol": "TSLA",
+      "name": "TSLA",
+      "price": "417.75",
+      "change": "0.00",
+      "signal": "HOLD",
+      "signalChinese": "持有不動",
+      "signalColor": "#2196f3",
+      "signalEmoji": "💎",
+      "volume": 124,
+      "high": "417.75",
+      "low": "417.75"
+    },
+    {
+      "symbol": "TSM",
+      "name": "TSM",
+      "price": "366.22",
+      "change": "-0.04",
+      "signal": "HOLD",
+      "signalChinese": "持有不動",
+      "signalColor": "#2196f3",
+      "signalEmoji": "💎",
+      "volume": 7352,
+      "high": "366.70",
+      "low": "366.02"
+    },
+    {
+      "symbol": "VOO",
+      "name": "VOO",
+      "price": "626.73",
+      "change": "-0.01",
+      "signal": "HOLD",
+      "signalChinese": "核心持倉",
+      "signalColor": "#9c27b0",
+      "signalEmoji": "💎",
+      "volume": 2582,
+      "high": "627.00",
+      "low": "626.73"
+    },
+    {
+      "symbol": "AVGO",
+      "name": "AVGO",
+      "price": "325.19",
+      "change": "0.05",
+      "signal": "HOLD",
+      "signalChinese": "持有不動",
+      "signalColor": "#2196f3",
+      "signalEmoji": "💎",
+      "volume": 15635,
+      "high": "325.29",
+      "low": "324.93"
+    }
+  ],
+  "summary": {
+    "totalStocks": 5,
+    "buySignals": 0,
+    "holdSignals": 5,
+    "avgChange": "0.00"
+  }
+}
