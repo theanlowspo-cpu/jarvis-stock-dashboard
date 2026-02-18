@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2026/2/18 下午4:59:05",
+  "lastUpdate": "2026/2/18 下午5:00:07",
   "stocks": [
     {
       "symbol": "NVDA",
@@ -23,33 +23,33 @@
     },
     {
       "symbol": "TSM",
-      "price": "364.26",
-      "change": "-1.96",
-      "changePercent": "-0.54",
+      "price": "364.20",
+      "change": "-2.16",
+      "changePercent": "-0.59",
       "rsi": "62.9",
-      "ma5": "366.91",
+      "ma5": "366.93",
       "ma20": "343.57",
-      "apiSource": "Alpaca"
+      "apiSource": "Tiingo"
     },
     {
       "symbol": "VOO",
-      "price": "627.94",
-      "change": "1.21",
-      "changePercent": "0.19",
-      "rsi": "38.8",
-      "ma5": "630.87",
-      "ma20": "633.41",
-      "apiSource": "Alpaca"
+      "price": "627.99",
+      "change": "1.10",
+      "changePercent": "0.18",
+      "rsi": "38.7",
+      "ma5": "630.83",
+      "ma20": "633.36",
+      "apiSource": "Tiingo"
     },
     {
       "symbol": "AVGO",
-      "price": "332.56",
+      "price": "332.54",
       "change": "7.37",
       "changePercent": "2.27",
       "rsi": "49.9",
-      "ma5": "334.35",
-      "ma20": "328.92",
-      "apiSource": "Alpaca"
+      "ma5": "334.42",
+      "ma20": "328.94",
+      "apiSource": "Tiingo"
     }
   ],
   "isMarketClosed": false,
