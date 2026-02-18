@@ -1,55 +1,55 @@
 {
-  "lastUpdate": "2026/2/18 下午11:00:04",
+  "lastUpdate": "2026/2/18 下午11:01:04",
   "stocks": [
     {
       "symbol": "NVDA",
-      "price": "185.11",
-      "change": "2.33",
-      "changePercent": "1.27",
-      "rsi": "46.9",
-      "ma5": "186.64",
-      "ma20": "185.22",
-      "apiSource": "Alpaca"
+      "price": "184.97",
+      "change": "2.16",
+      "changePercent": "1.18",
+      "rsi": "46.8",
+      "ma5": "186.66",
+      "ma20": "185.24",
+      "apiSource": "Tiingo"
     },
     {
       "symbol": "TSLA",
-      "price": "410.72",
-      "change": "-6.73",
-      "changePercent": "-1.61",
-      "rsi": "40.9",
-      "ma5": "419.75",
-      "ma20": "423.32",
-      "apiSource": "Alpaca"
+      "price": "411.32",
+      "change": "0.69",
+      "changePercent": "0.17",
+      "rsi": "41.0",
+      "ma5": "416.95",
+      "ma20": "422.99",
+      "apiSource": "Tiingo"
     },
     {
       "symbol": "TSM",
-      "price": "364.26",
-      "change": "-1.96",
-      "changePercent": "-0.54",
-      "rsi": "62.9",
-      "ma5": "366.91",
-      "ma20": "343.57",
-      "apiSource": "Alpaca"
+      "price": "362.26",
+      "change": "-1.94",
+      "changePercent": "-0.53",
+      "rsi": "60.1",
+      "ma5": "367.00",
+      "ma20": "345.33",
+      "apiSource": "Tiingo"
     },
     {
       "symbol": "VOO",
-      "price": "627.94",
-      "change": "1.21",
-      "changePercent": "0.19",
-      "rsi": "38.8",
-      "ma5": "630.87",
-      "ma20": "633.41",
-      "apiSource": "Alpaca"
+      "price": "631.15",
+      "change": "3.16",
+      "changePercent": "0.50",
+      "rsi": "42.3",
+      "ma5": "629.77",
+      "ma20": "633.76",
+      "apiSource": "Tiingo"
     },
     {
       "symbol": "AVGO",
-      "price": "332.56",
-      "change": "7.37",
-      "changePercent": "2.27",
-      "rsi": "49.9",
-      "ma5": "334.35",
-      "ma20": "328.92",
-      "apiSource": "Alpaca"
+      "price": "333.51",
+      "change": "0.97",
+      "changePercent": "0.29",
+      "rsi": "50.1",
+      "ma5": "333.03",
+      "ma20": "328.99",
+      "apiSource": "Tiingo"
     }
   ],
   "isMarketClosed": false,
