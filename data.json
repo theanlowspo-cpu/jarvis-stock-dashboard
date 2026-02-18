@@ -1,55 +1,55 @@
 {
-  "lastUpdate": "2026/2/18 下午10:10:04",
+  "lastUpdate": "2026/2/18 下午10:11:06",
   "stocks": [
     {
       "symbol": "NVDA",
-      "price": "184.97",
-      "change": "2.16",
-      "changePercent": "1.18",
-      "rsi": "46.8",
-      "ma5": "186.66",
-      "ma20": "185.24",
-      "apiSource": "Tiingo"
+      "price": "185.11",
+      "change": "2.33",
+      "changePercent": "1.27",
+      "rsi": "46.9",
+      "ma5": "186.64",
+      "ma20": "185.22",
+      "apiSource": "Alpaca"
     },
     {
       "symbol": "TSLA",
-      "price": "410.63",
-      "change": "-6.81",
-      "changePercent": "-1.63",
-      "rsi": "41.0",
-      "ma5": "419.72",
-      "ma20": "423.38",
-      "apiSource": "Tiingo"
+      "price": "410.72",
+      "change": "-6.73",
+      "changePercent": "-1.61",
+      "rsi": "40.9",
+      "ma5": "419.75",
+      "ma20": "423.32",
+      "apiSource": "Alpaca"
     },
     {
       "symbol": "TSM",
-      "price": "364.20",
-      "change": "-2.16",
-      "changePercent": "-0.59",
+      "price": "364.26",
+      "change": "-1.96",
+      "changePercent": "-0.54",
       "rsi": "62.9",
-      "ma5": "366.93",
+      "ma5": "366.91",
       "ma20": "343.57",
-      "apiSource": "Tiingo"
+      "apiSource": "Alpaca"
     },
     {
       "symbol": "VOO",
-      "price": "631.15",
-      "change": "3.16",
-      "changePercent": "0.50",
-      "rsi": "42.3",
-      "ma5": "629.77",
-      "ma20": "633.76",
-      "apiSource": "Tiingo"
+      "price": "627.94",
+      "change": "1.21",
+      "changePercent": "0.19",
+      "rsi": "38.8",
+      "ma5": "630.87",
+      "ma20": "633.41",
+      "apiSource": "Alpaca"
     },
     {
       "symbol": "AVGO",
-      "price": "332.54",
+      "price": "332.56",
       "change": "7.37",
       "changePercent": "2.27",
       "rsi": "49.9",
-      "ma5": "334.42",
-      "ma20": "328.94",
-      "apiSource": "Tiingo"
+      "ma5": "334.35",
+      "ma20": "328.92",
+      "apiSource": "Alpaca"
     }
   ],
   "isMarketClosed": false,
