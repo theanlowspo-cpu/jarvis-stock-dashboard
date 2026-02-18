@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2026/2/18 上午11:09:06",
+  "lastUpdate": "2026/2/18 上午11:10:05",
   "stocks": [
     {
       "symbol": "NVDA",
@@ -33,23 +33,23 @@
     },
     {
       "symbol": "VOO",
-      "price": "627.99",
-      "change": "1.10",
-      "changePercent": "0.18",
-      "rsi": "38.7",
-      "ma5": "630.83",
-      "ma20": "633.36",
-      "apiSource": "Tiingo"
+      "price": "627.94",
+      "change": "1.21",
+      "changePercent": "0.19",
+      "rsi": "38.8",
+      "ma5": "630.87",
+      "ma20": "633.41",
+      "apiSource": "Alpaca"
     },
     {
       "symbol": "AVGO",
-      "price": "332.54",
+      "price": "332.56",
       "change": "7.37",
       "changePercent": "2.27",
       "rsi": "49.9",
-      "ma5": "334.42",
-      "ma20": "328.94",
-      "apiSource": "Tiingo"
+      "ma5": "334.35",
+      "ma20": "328.92",
+      "apiSource": "Alpaca"
     }
   ],
   "isMarketClosed": false,
