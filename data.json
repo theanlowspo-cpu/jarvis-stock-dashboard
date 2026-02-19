@@ -1,15 +1,15 @@
 {
-  "lastUpdate": "2026/2/19 下午12:00:06",
+  "lastUpdate": "2026/2/19 下午12:01:06",
   "stocks": [
     {
       "symbol": "NVDA",
-      "price": "187.89",
-      "change": "2.78",
-      "changePercent": "1.50",
-      "rsi": "46.7",
-      "ma5": "186.53",
-      "ma20": "185.70",
-      "apiSource": "Alpaca"
+      "price": "187.98",
+      "change": "3.01",
+      "changePercent": "1.63",
+      "rsi": "46.8",
+      "ma5": "186.55",
+      "ma20": "185.74",
+      "apiSource": "Tiingo"
     },
     {
       "symbol": "TSLA",
