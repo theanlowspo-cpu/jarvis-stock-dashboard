@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2026/2/19 下午10:07:03",
+  "lastUpdate": "2026/2/19 下午10:08:04",
   "stocks": [
     {
       "symbol": "NVDA",
@@ -33,12 +33,12 @@
     },
     {
       "symbol": "VOO",
-      "price": "631.15",
-      "change": "3.16",
-      "changePercent": "0.50",
-      "rsi": "42.3",
-      "ma5": "629.77",
-      "ma20": "633.76",
+      "price": "629.53",
+      "change": "-1.62",
+      "changePercent": "-0.26",
+      "rsi": "42.1",
+      "ma5": "628.41",
+      "ma20": "633.72",
       "apiSource": "Tiingo"
     },
     {
