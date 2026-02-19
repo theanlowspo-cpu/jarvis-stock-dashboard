@@ -1,45 +1,45 @@
 {
-  "lastUpdate": "2026/2/19 下午11:00:06",
+  "lastUpdate": "2026/2/19 下午11:01:04",
   "stocks": [
     {
       "symbol": "NVDA",
-      "price": "187.89",
-      "change": "2.78",
-      "changePercent": "1.50",
-      "rsi": "46.7",
-      "ma5": "186.53",
-      "ma20": "185.70",
-      "apiSource": "Alpaca"
+      "price": "187.90",
+      "change": "-0.08",
+      "changePercent": "-0.04",
+      "rsi": "45.8",
+      "ma5": "186.12",
+      "ma20": "185.97",
+      "apiSource": "Tiingo"
     },
     {
       "symbol": "TSLA",
-      "price": "411.36",
-      "change": "0.64",
-      "changePercent": "0.16",
-      "rsi": "41.5",
-      "ma5": "416.97",
-      "ma20": "422.92",
-      "apiSource": "Alpaca"
+      "price": "411.71",
+      "change": "0.39",
+      "changePercent": "0.09",
+      "rsi": "47.5",
+      "ma5": "413.63",
+      "ma20": "422.00",
+      "apiSource": "Tiingo"
     },
     {
       "symbol": "TSM",
-      "price": "362.23",
-      "change": "-2.03",
-      "changePercent": "-0.56",
-      "rsi": "60.1",
-      "ma5": "366.98",
-      "ma20": "345.33",
-      "apiSource": "Alpaca"
+      "price": "360.39",
+      "change": "-1.87",
+      "changePercent": "-0.52",
+      "rsi": "60.7",
+      "ma5": "364.26",
+      "ma20": "347.04",
+      "apiSource": "Tiingo"
     },
     {
       "symbol": "VOO",
-      "price": "630.97",
-      "change": "3.03",
-      "changePercent": "0.48",
-      "rsi": "42.3",
-      "ma5": "629.75",
-      "ma20": "633.80",
-      "apiSource": "Alpaca"
+      "price": "629.53",
+      "change": "-1.62",
+      "changePercent": "-0.26",
+      "rsi": "42.1",
+      "ma5": "628.41",
+      "ma20": "633.72",
+      "apiSource": "Tiingo"
     },
     {
       "symbol": "AVGO",
