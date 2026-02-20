@@ -1,55 +1,55 @@
 {
-  "lastUpdate": "2026/2/20 上午10:10:04",
+  "lastUpdate": "2026/2/20 上午10:11:05",
   "stocks": [
     {
       "symbol": "NVDA",
-      "price": "187.90",
-      "change": "-0.08",
-      "changePercent": "-0.04",
-      "rsi": "45.8",
-      "ma5": "186.12",
-      "ma20": "185.97",
-      "apiSource": "Tiingo"
+      "price": "187.88",
+      "change": "-0.00",
+      "changePercent": "-0.00",
+      "rsi": "45.7",
+      "ma5": "186.11",
+      "ma20": "185.93",
+      "apiSource": "Alpaca"
     },
     {
       "symbol": "TSLA",
-      "price": "411.71",
-      "change": "0.39",
-      "changePercent": "0.09",
-      "rsi": "47.5",
-      "ma5": "413.63",
-      "ma20": "422.00",
-      "apiSource": "Tiingo"
+      "price": "411.69",
+      "change": "0.33",
+      "changePercent": "0.08",
+      "rsi": "47.6",
+      "ma5": "413.66",
+      "ma20": "421.94",
+      "apiSource": "Alpaca"
     },
     {
       "symbol": "TSM",
-      "price": "360.39",
-      "change": "-1.87",
-      "changePercent": "-0.52",
+      "price": "360.51",
+      "change": "-1.72",
+      "changePercent": "-0.47",
       "rsi": "60.7",
-      "ma5": "364.26",
-      "ma20": "347.04",
-      "apiSource": "Tiingo"
+      "ma5": "364.25",
+      "ma20": "347.05",
+      "apiSource": "Alpaca"
     },
     {
       "symbol": "VOO",
-      "price": "629.53",
-      "change": "-1.62",
-      "changePercent": "-0.26",
-      "rsi": "42.1",
-      "ma5": "628.41",
-      "ma20": "633.72",
-      "apiSource": "Tiingo"
+      "price": "629.43",
+      "change": "-1.54",
+      "changePercent": "-0.24",
+      "rsi": "41.7",
+      "ma5": "628.37",
+      "ma20": "633.75",
+      "apiSource": "Alpaca"
     },
     {
       "symbol": "AVGO",
-      "price": "333.99",
-      "change": "0.48",
-      "changePercent": "0.14",
+      "price": "333.98",
+      "change": "0.54",
+      "changePercent": "0.16",
       "rsi": "51.8",
-      "ma5": "331.28",
-      "ma20": "329.24",
-      "apiSource": "Tiingo"
+      "ma5": "331.25",
+      "ma20": "329.21",
+      "apiSource": "Alpaca"
     }
   ],
   "isMarketClosed": false,
